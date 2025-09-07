@@ -1,9 +1,7 @@
 import Stripe from 'stripe'
 
 // Cliente Stripe para servidor apenas
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
-})
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 // Configurações dos planos
 export const PLANS = {

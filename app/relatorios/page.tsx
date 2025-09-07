@@ -10,6 +10,7 @@ interface FilterState {
   periodo: string
   dataInicio: string
   dataFim: string
+  resultado: string
 }
 
 interface GameHistoryData {
@@ -48,7 +49,8 @@ const RelatoriosPage = () => {
     categoria: 'todas',
     periodo: '30-dias',
     dataInicio: '',
-    dataFim: ''
+    dataFim: '',
+    resultado: 'todos'
   })
 
   const [activeView, setActiveView] = useState<'resumo' | 'categorias' | 'historico'>('resumo')

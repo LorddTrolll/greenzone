@@ -20,6 +20,8 @@ interface AuthContextType {
   isAdmin: () => boolean
   isAuthenticated: () => boolean
   isVip: () => boolean
+  vipPlan?: string
+  vipExpiresAt?: string
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -182,7 +184,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     logout,
     isAdmin,
     isAuthenticated,
-    isVip
+    isVip,
+    vipPlan: user?.vipExpiresAt ? 'Premium' : undefined,
+    vipExpiresAt: user?.vipExpiresAt
   }
 
   return (

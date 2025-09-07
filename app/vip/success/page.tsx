@@ -10,7 +10,7 @@ export default function SuccessPage() {
   const [error, setError] = useState('')
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { refreshProfile, user } = useAuth()
+  const { user, vipPlan } = useAuth()
 
   useEffect(() => {
     const sessionId = searchParams.get('session_id')
@@ -22,19 +22,12 @@ export default function SuccessPage() {
     }
 
     // Aguardar um pouco para o webhook processar
-    const timer = setTimeout(async () => {
-      try {
-        await refreshProfile()
-        setLoading(false)
-      } catch (error) {
-        console.error('Erro ao atualizar perfil:', error)
-        setError('Erro ao verificar status da assinatura')
-        setLoading(false)
-      }
+    const timer = setTimeout(() => {
+      setLoading(false)
     }, 3000)
 
     return () => clearTimeout(timer)
-  }, [searchParams, refreshProfile])
+  }, [searchParams])
 
   if (loading) {
     return (
@@ -102,7 +95,7 @@ export default function SuccessPage() {
               </span>
             </div>
             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              Plano: {user?.vipPlan === 'mensal' ? 'Mensal' : 'Anual'}
+              Plano: {vipPlan === 'MONTHLY' ? 'Mensal' : 'Anual'}
             </p>
             {user?.vipExpiresAt && (
               <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>

@@ -10,7 +10,7 @@ interface Bet {
   market: string
   stake: number
   unit: number
-  odd: number
+  odd: number | string
   result: 'green' | 'red' | 'anulado' | 'pendente'
 }
 
@@ -18,7 +18,7 @@ interface MultipleBetSelection {
   id: number
   teams: string
   market: string
-  odd: number
+  odd: number | string
 }
 
 interface MultipleBet {
@@ -69,7 +69,8 @@ const RegistroPage = () => {
 
   const calculateProfit = (bet: Bet) => {
     if (bet.result === 'green') {
-      return bet.stake * (bet.odd - 1)
+      const oddValue = typeof bet.odd === 'string' ? parseFloat(bet.odd) : bet.odd
+      return bet.stake * (oddValue - 1)
     } else if (bet.result === 'red') {
       return -bet.stake
     }
@@ -101,7 +102,7 @@ const RegistroPage = () => {
   }
   
   const addSelectionToMultiple = () => {
-    if (currentSelection.teams && currentSelection.market && currentSelection.odd > 0) {
+    if (currentSelection.teams && currentSelection.market && (typeof currentSelection.odd === 'string' ? parseFloat(currentSelection.odd) : currentSelection.odd) > 0) {
       const newSelection: MultipleBetSelection = {
         ...currentSelection,
         id: Date.now()
@@ -126,7 +127,14 @@ const RegistroPage = () => {
   }
   
   const calculateTotalOdd = (selections: MultipleBetSelection[]) => {
-    return selections.reduce((total, selection) => total * selection.odd, 1)
+    return selections.reduce((total, selection) => {
+      const oddValue = typeof selection.odd === 'string' ? parseFloat(selection.odd) : selection.odd
+      return total * oddValue
+    }, 1)
+  }
+
+  const getCurrentSelectionOddValue = () => {
+    return typeof currentSelection.odd === 'string' ? parseFloat(currentSelection.odd) : currentSelection.odd
   }
   
   const addMultipleBet = () => {
@@ -478,7 +486,7 @@ const RegistroPage = () => {
                       }}
                     />
 
-                    {currentBet.odd && currentBet.odd < 1.01 && (
+                    {currentBet.odd && (typeof currentBet.odd === 'string' ? parseFloat(currentBet.odd) : currentBet.odd) < 1.01 && (
                       <div className="absolute -bottom-5 left-0 text-xs text-red-500">
                         Odd deve ser maior que 1.00
                       </div>
@@ -724,22 +732,22 @@ const RegistroPage = () => {
                     className="w-full rounded-lg px-3 py-2 focus:outline-none transition-all duration-200"
                     style={{
                       backgroundColor: 'var(--bg-tertiary)',
-                      border: `1px solid ${currentSelection.odd < 1.01 || currentSelection.odd > 50 ? 'var(--red-primary)' : 'var(--border-color)'}`,
+                      border: `1px solid ${getCurrentSelectionOddValue() < 1.01 || getCurrentSelectionOddValue() > 50 ? 'var(--red-primary)' : 'var(--border-color)'}`,
                       color: 'var(--text-primary)',
-                      boxShadow: currentSelection.odd >= 1.01 && currentSelection.odd <= 50 ? '0 0 0 2px rgba(34, 197, 94, 0.1)' : '0 0 0 2px rgba(239, 68, 68, 0.1)'
+                      boxShadow: getCurrentSelectionOddValue() >= 1.01 && getCurrentSelectionOddValue() <= 50 ? '0 0 0 2px rgba(34, 197, 94, 0.1)' : '0 0 0 2px rgba(239, 68, 68, 0.1)'
                     }}
                     onFocus={(e) => {
-                      e.target.style.borderColor = currentSelection.odd < 1.01 || currentSelection.odd > 50 ? 'var(--red-primary)' : 'var(--green-primary)';
-                      e.target.style.boxShadow = currentSelection.odd < 1.01 || currentSelection.odd > 50 ? '0 0 0 3px rgba(239, 68, 68, 0.2)' : '0 0 0 3px rgba(34, 197, 94, 0.2)';
+                      e.target.style.borderColor = getCurrentSelectionOddValue() < 1.01 || getCurrentSelectionOddValue() > 50 ? 'var(--red-primary)' : 'var(--green-primary)';
+                      e.target.style.boxShadow = getCurrentSelectionOddValue() < 1.01 || getCurrentSelectionOddValue() > 50 ? '0 0 0 3px rgba(239, 68, 68, 0.2)' : '0 0 0 3px rgba(34, 197, 94, 0.2)';
                     }}
                     onBlur={(e) => {
-                      e.target.style.borderColor = currentSelection.odd < 1.01 || currentSelection.odd > 50 ? 'var(--red-primary)' : 'var(--border-color)';
-                      e.target.style.boxShadow = currentSelection.odd < 1.01 || currentSelection.odd > 50 ? '0 0 0 2px rgba(239, 68, 68, 0.1)' : '0 0 0 2px rgba(34, 197, 94, 0.1)';
+                      e.target.style.borderColor = getCurrentSelectionOddValue() < 1.01 || getCurrentSelectionOddValue() > 50 ? 'var(--red-primary)' : 'var(--border-color)';
+                      e.target.style.boxShadow = getCurrentSelectionOddValue() < 1.01 || getCurrentSelectionOddValue() > 50 ? '0 0 0 2px rgba(239, 68, 68, 0.1)' : '0 0 0 2px rgba(34, 197, 94, 0.1)';
                     }}
                   />
 
                 </div>
-                {(currentSelection.odd < 1.01 || currentSelection.odd > 50) && (
+                {(getCurrentSelectionOddValue() < 1.01 || getCurrentSelectionOddValue() > 50) && (
                   <p className="text-xs mt-1" style={{ color: 'var(--red-primary)' }}>Odd deve estar entre 1.01 e 50.00</p>
                 )}
               </div>
@@ -766,7 +774,7 @@ const RegistroPage = () => {
                           <span className="mx-2" style={{ color: 'var(--text-secondary)' }}>•</span>
                           <span style={{ color: 'var(--text-secondary)' }}>{selection.market}</span>
                            <span className="mx-2" style={{ color: 'var(--text-secondary)' }}>•</span>
-                          <span className="text-green-primary font-mono">{selection.odd.toFixed(2)}</span>
+                          <span className="text-green-primary font-mono">{(typeof selection.odd === 'string' ? parseFloat(selection.odd) : selection.odd).toFixed(2)}</span>
                         </div>
                         <button
                           onClick={() => removeSelectionFromMultiple(selection.id)}
@@ -890,7 +898,7 @@ const RegistroPage = () => {
                       <tr key={bet.id} className="transition-colors" style={{ borderBottom: '1px solid var(--border-color)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                         <td className="py-4 px-4 text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{bet.teams}</td>
                         <td className="py-4 px-4 text-sm" style={{ color: 'var(--text-secondary)' }}>{bet.market}</td>
-                        <td className="py-4 px-4 text-center text-sm font-mono" style={{ color: 'var(--text-primary)' }}>{bet.odd.toFixed(2)}</td>
+                        <td className="py-4 px-4 text-center text-sm font-mono" style={{ color: 'var(--text-primary)' }}>{(typeof bet.odd === 'string' ? parseFloat(bet.odd) : bet.odd).toFixed(2)}</td>
                         <td className="py-4 px-4 text-center text-sm font-mono" style={{ color: 'var(--text-primary)' }}>R$ {bet.stake.toFixed(2)}</td>
                         <td className="py-4 px-4 text-center">
                           <select
@@ -978,7 +986,7 @@ const RegistroPage = () => {
                           <span className="mx-2" style={{ color: 'var(--text-secondary)' }}>•</span>
                           <span style={{ color: 'var(--text-secondary)' }}>{selection.market}</span>
                           <span className="mx-2" style={{ color: 'var(--text-secondary)' }}>•</span>
-                          <span className="text-green-primary font-mono">{selection.odd.toFixed(2)}</span>
+                          <span className="text-green-primary font-mono">{(typeof selection.odd === 'string' ? parseFloat(selection.odd) : selection.odd).toFixed(2)}</span>
                         </div>
                       ))}
                     </div>

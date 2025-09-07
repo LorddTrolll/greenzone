@@ -69,7 +69,7 @@ export default function VipPage() {
   const [loading, setLoading] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
-  const { user, isAuthenticated, isVip } = useAuth()
+  const { user, isAuthenticated, isVip, vipPlan } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -146,7 +146,7 @@ export default function VipPage() {
               Status: VIP Ativo
             </h2>
             <p style={{ color: 'var(--text-secondary)' }}>
-              Plano: {user?.vipPlan === 'mensal' ? 'Mensal' : 'Anual'}
+              Plano: {vipPlan === 'MONTHLY' ? 'Mensal' : 'Anual'}
             </p>
             {user?.vipExpiresAt && (
               <p style={{ color: 'var(--text-secondary)' }}>
@@ -225,8 +225,7 @@ export default function VipPage() {
               className={`relative p-8 rounded-lg ${plan.popular ? 'ring-2' : ''}`}
               style={{
                 backgroundColor: 'var(--bg-secondary)',
-                border: '1px solid var(--border-color)',
-                ringColor: plan.popular ? 'var(--green-primary)' : 'transparent'
+                border: '1px solid var(--border-color)'
               }}
             >
               {plan.popular && (
