@@ -92,7 +92,7 @@ async function handleCheckoutCompleted(
     {
       expand: ['items.data.price']
     }
-  )
+  ) as Stripe.Subscription
 
   const priceId = subscription.items.data[0].price.id
   const planType = getPlanTypeFromPriceId(priceId)
@@ -146,7 +146,7 @@ async function handlePaymentSucceeded(
 
   const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
     expand: ['items.data.price']
-  })
+  }) as Stripe.Subscription
   const userId = subscription.metadata?.userId
   
   if (!userId) {
@@ -181,7 +181,7 @@ async function handlePaymentFailed(
   const subscriptionId = invoice.subscription as string
   if (!subscriptionId) return
 
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId) as Stripe.Subscription
   const userId = subscription.metadata?.userId
   
   if (!userId) {
