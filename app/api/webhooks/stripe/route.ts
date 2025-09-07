@@ -88,7 +88,10 @@ async function handleCheckoutCompleted(
 
   // Buscar detalhes da assinatura
   const subscription = await stripe.subscriptions.retrieve(
-    session.subscription as string
+    session.subscription as string,
+    {
+      expand: ['items.data.price']
+    }
   )
 
   const priceId = subscription.items.data[0].price.id
@@ -141,7 +144,9 @@ async function handlePaymentSucceeded(
   const subscriptionId = invoice.subscription as string
   if (!subscriptionId) return
 
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
+    expand: ['items.data.price']
+  })
   const userId = subscription.metadata?.userId
   
   if (!userId) {
