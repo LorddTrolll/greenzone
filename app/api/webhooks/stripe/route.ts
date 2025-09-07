@@ -98,8 +98,8 @@ async function handleCheckoutCompleted(
   const planType = getPlanTypeFromPriceId(priceId)
   
   // Validar timestamps antes de converter para Date
-  const startTimestamp = subscription.current_period_start
-  const endTimestamp = subscription.current_period_end
+  const startTimestamp = (subscription as any).current_period_start
+  const endTimestamp = (subscription as any).current_period_end
   
   if (!startTimestamp || !endTimestamp || startTimestamp <= 0 || endTimestamp <= 0) {
     console.error('Timestamps inválidos na assinatura:', { startTimestamp, endTimestamp })
@@ -154,7 +154,7 @@ async function handlePaymentSucceeded(
     return
   }
 
-  const currentPeriodEnd = new Date(subscription.current_period_end * 1000)
+  const currentPeriodEnd = new Date((subscription as any).current_period_end * 1000)
 
   // Atualizar data de expiração
   const { error } = await supabase
@@ -211,7 +211,7 @@ async function handleSubscriptionUpdated(
   }
 
   const isActive = subscription.status === 'active'
-  const endTimestamp = subscription.current_period_end
+  const endTimestamp = (subscription as any).current_period_end
   
   // Validar timestamp antes de converter para Date
   if (!endTimestamp || endTimestamp <= 0) {
